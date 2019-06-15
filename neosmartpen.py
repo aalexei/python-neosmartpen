@@ -1,5 +1,6 @@
-import os, sys
+import os, sys, re
 import struct
+from zipfile import ZipFile
 
 def parse_pagedata(raw):
     '''
@@ -80,15 +81,39 @@ def parse_pagedata(raw):
 
     return data
 
+def parse_pages(path):
+    '''
+    Parse zip file and extract stroke data on each page
+    '''
+
+    zip = ZipFile(path)
+    pages = [p for p in zip.namelist() if p.endswith('page.data')] 
+    pagepaths = []
+    for p in zip.namelist():
+        if p.endswith('page.data'):
+            so = re.search('Data/(\d+)\.page_store', p)
+            n=int(so.group(1))
+            pagepaths.append((n,p))
+
+    pagepaths.sort(key=lambda x: x[1])
+
+    pages = []
+    for n,p in pagepaths:
+        zp = zip.open(p)
+        raw = zp.read()
+        zp.close()
+        data = parse_pagedata(raw)
+        pages.append(data)
+
+    return pages
+
+
 if __name__ == "__main__":
-    F = sys.argv[1]
-    fp = open(F,'rb')
-    raw = fp.read()
-    fp.close()
+    pages = parse_pages(sys.argv[1])
 
-    data = parse_pagedata(raw)
-
-    for s in data['strokes']:
-        print()
-        for x,y,p,dt in s['dots']:
-            print('{x:.2f}, {y:.2f}, {p:.2f}, {dt:2d}'.format(**locals()))
+    for n,data in enumerate(pages):
+        print('Page ', n+1)
+        for s in data['strokes']:
+            print()
+            for x,y,p,dt in s['dots']:
+                print('{x:.2f}, {y:.2f}, {p:.2f}, {dt:2d}'.format(**locals()))
