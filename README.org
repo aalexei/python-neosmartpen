@@ -1,0 +1,7 @@
+#+TITLE: README for python-neosmartpen
+#+AUTHOR: Alexei Gilchrist
+#+DATE: 2019-06-15
+
+Python library for reading and manipulating Neo Smartpen data
+
+
