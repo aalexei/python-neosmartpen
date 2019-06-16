@@ -4,4 +4,25 @@
 
 Python library for reading and manipulating Neo Smartpen data
 
+* neosmartpen.py
+
+Requirements: just python3
+
+Usage:
+
+import neosmartpen
+pages = neosmartpen.parse_pages(path_to_zip_file)
+
+ - ~pages~ will be a list of page dictionaries. 
+ - Page dictionaries contain a bunch of parameters and a list of ~strokes~
+ - ~strokes~ have properties like color, timestamp, and list of ~dots~.
+ - ~dots~ are (x,y,pressure,dt) tuples that define the stroke.
+ 
+* pen2pdf.py
+
+Convert neo smartpen zip file to multi-page pdf.
+
+Requirements: python3 and reportlab 
+
+Usage:  pen2pdf.py pen_file.zip output.pdf 
 

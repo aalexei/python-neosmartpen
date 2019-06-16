@@ -1,26 +1,32 @@
+#!/usr/bin/env python3
 import sys
 import neosmartpen
-
-# from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.pagesizes import A4
-# from reportlab.graphics import renderPDF
-# from reportlab.graphics.shapes import Drawing
-
 from reportlab.pdfgen import canvas
-
+import argparse
 import logging
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
+
+parser = argparse.ArgumentParser(description='Convert Neo SmatPen zip file to PDF.')
+parser.add_argument('input',  help='Input zip file')
+parser.add_argument('output', help='Output PDF file')
+parser.add_argument('-t', nargs=4, default=(60,0,200,10), metavar=('x1','y1','x2','y2'), type=int, help='Transition trigger region')
+
+args = parser.parse_args()
+
+TRANSITION_REGION = args.t
+
 def transition(x,y):
-    if x>60 and y<20:
+    if TRANSITION_REGION[0]<x<TRANSITION_REGION[2] and \
+       TRANSITION_REGION[1]<y<TRANSITION_REGION[3]:
         return True
     else:
         return False
 
+c = canvas.Canvas(args.output, pagesize=(A4[1],A4[0]), bottomup=0)
 
-c = canvas.Canvas(sys.argv[2], pagesize=(A4[1],A4[0]), bottomup=0)
-
-pages = neosmartpen.parse_pages(sys.argv[1])
+pages = neosmartpen.parse_pages(args.input)
 c.setLineCap(1)
 c.setAuthor("pen2pdf")
 c.setTitle("Notes")
@@ -57,5 +63,3 @@ for n,data in enumerate(pages):
 
 c.save()
 
-if __name__ == "__main__":
-    pass
