@@ -7,10 +7,15 @@ import argparse
 import logging
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
+# Daniel's 3 Box control regions:
+# 4 6 12 13
+# 4 15 12 22
+# 4 24 12 31
+
 parser = argparse.ArgumentParser(description='Convert Neo SmatPen zip file to PDF.')
 parser.add_argument('input',  help='Input zip file')
 parser.add_argument('output', help='Output PDF file')
-parser.add_argument('-t', nargs=4, default=(60,0,200,10), metavar=('x1','y1','x2','y2'), type=int, help='Transition trigger region')
+parser.add_argument('-t', nargs=4, default=(4,6,12,13), metavar=('x1','y1','x2','y2'), type=int, help='Transition trigger region')
 
 args = parser.parse_args()
 
@@ -56,7 +61,6 @@ def addPage(canvas, page, strokes):
 
 for n,data in enumerate(pages):
     logging.info('Generating Page: %d', n+1)
-    S = A4[0]/data['width']
     strokes = []
     for s in data['strokes']:
         dots = s['dots']
