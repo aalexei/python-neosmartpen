@@ -11,7 +11,6 @@ parser = argparse.ArgumentParser(description='Convert Neo SmatPen zip file to PD
 parser.add_argument('input',  help='Input zip file')
 parser.add_argument('output', help='Output PDF file')
 parser.add_argument('-t', nargs=4, default=(60,0,200,10), metavar=('x1','y1','x2','y2'), type=int, help='Transition trigger region')
-parser.add_argument('-l', action='store_true', help='Generate Landscape PDF')
 
 args = parser.parse_args()
 
@@ -24,13 +23,7 @@ def transition(x,y):
     else:
         return False
 
-if args.l:
-    PAGE=(A4[1],A4[0])
-    logging.info('Generating landscape A4')
-else:
-    PAGE=A4
-    logging.info('Generating portrait A4')
-c = canvas.Canvas(args.output, pagesize=PAGE, bottomup=0)
+c = canvas.Canvas(args.output, bottomup=0)
 
 pages = neosmartpen.parse_pages(args.input)
 c.setLineCap(1)
@@ -38,8 +31,13 @@ c.setAuthor("pen2pdf")
 c.setTitle("Notes")
 c.setSubject("Notes generated with pen2pdf")
 
-
 def addPage(canvas, page, strokes):
+    if page['height']>page['width']:
+        PAGE=(A4[0],A4[1])
+    else:
+        PAGE=(A4[1],A4[0])
+
+    canvas.setPageSize(PAGE)
     S = PAGE[0]/page['width']
 
     for s in strokes:
