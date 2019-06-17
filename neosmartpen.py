@@ -57,10 +57,16 @@ def parse_pagedata(raw):
     start = 44
     for n in range(nstrokes):
         o = struct.unpack('<BIBIQ', raw[start:start+18])
-        if o[0]!=0:
-            # not a pen stroke, skip it.
+        #import pudb; pudb.set_trace()
+
+        if o[0]==1:
+            # audio registration, not a pen stroke, skip it.
+            start+=108
             continue
-        stroke = {'type':o[0], 'color':o[1], 'thickness':o[2], 'time':o[4]}
+
+        col = [(o[1]>>(8*i))&0xff for i in range(3,-1,-1)]
+
+        stroke = {'type':o[0], 'color':col, 'thickness':o[2], 'time':o[4]}
         ndots = o[3]
         start2 = start+18
         dots = []
@@ -113,7 +119,11 @@ if __name__ == "__main__":
 
     for n,data in enumerate(pages):
         print('Page ', n+1)
-        for s in data['strokes']:
-            print()
-            for x,y,p,dt in s['dots']:
-                print('{x:.2f}, {y:.2f}, {p:.2f}, {dt:2d}'.format(**locals()))
+        for m,s in enumerate(data['strokes']):
+            print('\nStroke {}'.format(m))
+            if s['type']==0:
+                print('col:',s['color'], ' thickness:', s['thickness'])
+                for x,y,p,dt in s['dots']:
+                    print('x:{x:.2f}, y:{y:.2f}, p:{p:.2f}, dt:{dt:2d}'.format(**locals()))
+            else:
+                print('audio')

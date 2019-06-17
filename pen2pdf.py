@@ -24,7 +24,7 @@ def transition(x,y):
     else:
         return False
 
-c = canvas.Canvas(args.output, pagesize=(A4[1],A4[0]), bottomup=0)
+c = canvas.Canvas(args.output, pagesize=(A4[0],A4[1]), bottomup=0)
 
 pages = neosmartpen.parse_pages(args.input)
 c.setLineCap(1)
@@ -34,14 +34,16 @@ c.setSubject("Notes generated with pen2pdf")
 
 
 def addPage(canvas, page, strokes):
-    S = A4[1]/page['width']
+    S = A4[0]/page['width']
 
     for s in strokes:
         dots = s['dots']
         x0,y0,p0,dt0 = dots[0]
 
         for x,y,p,dt in dots[1:]:
-            canvas.setLineWidth(2*p)
+            canvas.setLineWidth((s['thickness']+2)*p)
+            col = s['color']
+            canvas.setStrokeColorRGB(col[1]/255,col[2]/255,col[3]/255)
             canvas.line(S*x0,S*y0,S*x,S*y)
             x0,y0,p0=x,y,p
 
@@ -49,7 +51,7 @@ def addPage(canvas, page, strokes):
 
 
 for n,data in enumerate(pages):
-    print('Page ', n+1)
+    logging.info('Generating Page: %d', n+1)
     S = A4[0]/data['width']
     strokes = []
     for s in data['strokes']:
