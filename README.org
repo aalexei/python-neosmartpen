@@ -4,25 +4,63 @@
 
 Python library for reading and manipulating Neo Smartpen data
 
-* neosmartpen.py
+* neosmartpen
 
 Requirements: just python3
 
 Usage:
+#+BEGIN_SRC python
+  import neosmartpen
+  pages = neosmartpen.parse_pages(path_to_neonotes_file)
+#+END_SRC
 
-import neosmartpen
-pages = neosmartpen.parse_pages(path_to_zip_file)
-
- - ~pages~ will be a list of page dictionaries. 
- - Page dictionaries contain a bunch of parameters and a list of ~strokes~
+ - ~pages~ will be a list of page dictionaries:
+ |--------------+-------------------------|
+ | Field        | Description             |
+ |--------------+-------------------------|
+ | neo          | 'neo' (check)           |
+ | file_version | File version            |
+ | note_type    |                         |
+ | page         | Page number             |
+ | width        | Notebook width          |
+ | height       | Notebook height         |
+ | ctime        | Created timestamp (ms)  |
+ | mtime        | Modified timestamp (ms) |
+ | modified     | Flag if data modified   |
+ | strokes      | Stroke list             |
+ |--------------+-------------------------|
+ - Page dictionaries contain a bunch of parameters and a list of ~strokes~:
+ |-----------+------------------------|
+ | Field     | Description            |
+ |-----------+------------------------|
+ | type      | 0=stroke, 1=voice memo |
+ | color     | (A,R,G,B) [0-255]      |
+ | thickness | [0-2]                  |
+ | time      | Start timestamp (ms)   |
+ | dots      | List of point data     |
+ | extra     | ?                      |
+ |-----------+------------------------|
  - ~strokes~ have properties like color, timestamp, and list of ~dots~.
- - ~dots~ are (x,y,pressure,dt) tuples that define the stroke.
+ - ~dots~ are (x,y,pressure,dt) tuples that define the stroke. ~dt~ is the time delta between points in ms.
  
-* pen2pdf.py
+* pen2pdf
 
-Convert neo smartpen zip file to multi-page pdf.
+Convert neonotes file to multi-page pdf.
 
-Requirements: python3 and reportlab 
+Requirements: ~python3~ and ~reportlab~ 
 
-Usage:  pen2pdf.py pen_file.zip output.pdf 
+Usage:  
+#+BEGIN_SRC bash
+  pen2pdf.py pen_file.zip output.pdf 
+  pen2pdf.py -h
+#+END_SRC
 
+* pen2reveal
+
+Convert neonotes file to ~index.html~ for use with [[https://revealjs.com][reveal.js]]
+
+Usage:
+#+BEGIN_SRC bash
+  pen2reveal.py neonotes_file index.html 
+  pen2reveal -h
+#+END_SRC
