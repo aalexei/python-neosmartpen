@@ -15,6 +15,7 @@ Usage:
 #+END_SRC
 
  - ~pages~ will be a list of page dictionaries:
+ - Page dictionaries contain a bunch of parameters and a list of ~strokes~:
  |--------------+-------------------------|
  | Field        | Description             |
  |--------------+-------------------------|
@@ -29,7 +30,7 @@ Usage:
  | modified     | Flag if data modified   |
  | strokes      | Stroke list             |
  |--------------+-------------------------|
- - Page dictionaries contain a bunch of parameters and a list of ~strokes~:
+ - ~strokes~ are dictionaries with properties like color, and list of ~dots~:
  |-----------+------------------------|
  | Field     | Description            |
  |-----------+------------------------|
@@ -40,8 +41,8 @@ Usage:
  | dots      | List of point data     |
  | extra     | ?                      |
  |-----------+------------------------|
- - ~strokes~ have properties like color, timestamp, and list of ~dots~.
- - ~dots~ are (x,y,pressure,dt) tuples that define the stroke. ~dt~ is the time delta between points in ms.
+ - ~dots~ are (x,y,pressure,dt) tuples that define the stroke. 
+~dt~ is the time delta between points in ms.
  
 * pen2pdf
 
