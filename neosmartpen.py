@@ -1,4 +1,4 @@
-import os, sys, re
+import os, sys, re, glob
 import struct
 from zipfile import ZipFile
 
@@ -89,29 +89,49 @@ def parse_pagedata(raw):
 
 def parse_pages(path):
     '''
-    Parse zip file and extract stroke data on each page
+    Parse neonotes file and extract stroke data on each page
     '''
 
-    zip = ZipFile(path)
-    pages = [p for p in zip.namelist() if p.endswith('page.data')] 
-    pagepaths = []
-    for p in zip.namelist():
-        if p.endswith('page.data'):
+    parsedpages = []
+
+    if os.path.isdir(path):
+        pages = glob.glob(path+'/*/*/page.data')
+        pagepaths = []
+        for p in pages:
             so = re.search('Data/(\d+)\.page_store', p)
             n=int(so.group(1))
             pagepaths.append((n,p))
 
-    pagepaths.sort(key=lambda x: x[1])
+        pagepaths.sort(key=lambda x: x[1])
 
-    pages = []
-    for n,p in pagepaths:
-        zp = zip.open(p)
-        raw = zp.read()
-        zp.close()
-        data = parse_pagedata(raw)
-        pages.append(data)
+        for n,p in pagepaths:
+            fp = open(p, 'rb')
+            raw = fp.read()
+            fp.close()
+            data = parse_pagedata(raw)
+            parsedpages.append(data)
 
-    return pages
+    else:
+        # Assumed to be a zip file
+        zip = ZipFile(path)
+        pages = [p for p in zip.namelist() if p.endswith('page.data')]
+        pagepaths = []
+        for p in zip.namelist():
+            if p.endswith('page.data'):
+                so = re.search('Data/(\d+)\.page_store', p)
+                n=int(so.group(1))
+                pagepaths.append((n,p))
+
+        pagepaths.sort(key=lambda x: x[1])
+
+        for n,p in pagepaths:
+            zp = zip.open(p)
+            raw = zp.read()
+            zp.close()
+            data = parse_pagedata(raw)
+            parsedpages.append(data)
+
+    return parsedpages
 
 
 if __name__ == "__main__":
@@ -127,3 +147,28 @@ if __name__ == "__main__":
                     print('x:{x:.2f}, y:{y:.2f}, p:{p:.2f}, dt:{dt:2d}'.format(**locals()))
             else:
                 print('audio')
+
+def bounding_box(strokes):
+    '''
+    Return the bounding box of the strokes
+    (x_min, y_min, x_max, y_max)
+    '''
+    xm,ym=None,None
+    xM,yM=None,None
+
+    for s in strokes:
+        for x,y,p,dt in s['dots']:
+            if xm==None:
+                xm,ym=x,y
+                xM,yM=x,y
+            else:
+                xm,ym=min(xm,x),min(ym,y)
+                xM,yM=max(xM,x),max(yM,y)
+    return (xm,ym,xM,yM)
+
+def col2hex(col):
+    hexcol = "#%02x%02x%02x"%(col[1],col[2],col[3])
+    return hexcol
+
+
+
