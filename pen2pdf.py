@@ -31,12 +31,12 @@ def transition(x,y):
 c = canvas.Canvas(args.output, bottomup=0)
 
 pages = neosmartpen.parse_pages(args.input)
-c.setLineCap(1)
 c.setAuthor("pen2pdf")
 c.setTitle("Notes")
 c.setSubject("Notes generated with pen2pdf")
 
 def addPage(canvas, page, strokes):
+    canvas.setLineCap(1)
     if page['height']>page['width']:
         PAGE=(A4[0],A4[1])
     else:
@@ -50,7 +50,8 @@ def addPage(canvas, page, strokes):
         x0,y0,p0,dt0 = dots[0]
 
         for x,y,p,dt in dots[1:]:
-            canvas.setLineWidth((s['thickness']+2)*p)
+            # the factor 1.5 visually matches the thickness in neonote app 
+            canvas.setLineWidth((s['thickness']+1.5)*p)
             col = s['color']
             canvas.setStrokeColorRGB(col[1]/255,col[2]/255,col[3]/255)
             canvas.line(S*x0,S*y0,S*x,S*y)
