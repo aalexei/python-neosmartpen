@@ -10,6 +10,11 @@ parser.add_argument('input',  help='Input smartpen file')
 parser.add_argument('output', help='Output html file')
 parser.add_argument('-t', nargs=4, default=(0,0,10,10), metavar=('x1','y1','x2','y2'), type=int, help='Transition trigger region')
 
+# <?xml version="1.0"?>
+# <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" 
+#               "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+# <svg width="134" height="38" xmlns="http://www.w3.org/2000/svg">
+
 args = parser.parse_args()
 
 TRANSITION_REGION = args.t
