@@ -103,7 +103,8 @@ def makeFragment(page, strokes, S=10):
         g = '<g stroke="%s" stroke-linecap="round">%s</g>'%(hexcol, ' '.join(D))
         paths.append(g)
 
-    svg = '\n\n<div class="fragment">\n<svg width="%d" height="%d">\n'%(round(S*(xM-xm)), round(S*(yM-ym)))
+    # style="position: fixed; left: 0px; top: 0px;"
+    svg = '<div class="fragment">\n<svg width="%d" height="%d">\n'%(round(S*(xM-xm)), round(S*(yM-ym)))
     for p in paths:
         svg+=p
     svg+='</svg></div>\n'
